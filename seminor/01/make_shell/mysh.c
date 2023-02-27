@@ -8,14 +8,14 @@
 
 void child(char* input);
 void parent();
-char* read_line();
-void text_convert(char* input, int count);
+char *read_line();
+void text_convert(char *input, int count);
+void check_keyword(char args);
 
 
 int main(int argc, char *argv[]){
 
   char* line;
-  // char* args[MAX];
 
   while(1){
   printf("(pid:%d)>", (int) getpid());
@@ -25,8 +25,6 @@ int main(int argc, char *argv[]){
   /* shell */
   line = strdup(read_line());
 
-  // printf("\nread line: %s\n", line);
-
     int rc = fork();
     if(rc < 0){
       printf("something error\n");
@@ -34,16 +32,12 @@ int main(int argc, char *argv[]){
     }
     else if(rc == 0){
       // child
-      // printf("hello, I am child (pid:%d)\n", (int) getpid());
       child(line);
     }
     else{
       // parent
       int rc_wait = wait(NULL);
-      // printf("hello, I am parent of %d (rc_wait:%d) (pid:%d)\n", rc, rc_wait, (int) getpid());
-      // printf("(pid:%d)>", (int) getpid());
       parent();
-      // line = strdup(read_line());
     }
   }
 
@@ -60,6 +54,8 @@ void child(char* input){
 
       strcpy(line, input);
       // printf("cmdline: %s\n", line);
+      
+      check_keyword(line);
 
       int counter = 0; 
 
@@ -80,10 +76,11 @@ void child(char* input){
       // printf("単語数 :%d\n", counter);
      
       char *args[counter];  for(int j = 0; j < counter; j++){ args[j] = NULL; }
+
       
       // DEBUG
       // for(int c = 0; c < counter; c++){
-        // printf("args[%d]: %s\n", c, args[c]);
+      //   printf("args[%d]: %s\n", c, args[c]);
       // }
       
       cmdline = strtok(line, " ");
@@ -103,15 +100,10 @@ void child(char* input){
         i++;
       }
       
-      // char *myargs[2];
-      // myargs[0] = strdup("ls");
-      // myargs[1] = NULL;
-      // execvp(myargs[0], myargs);
-      
       
       // DEBUG
       // for(int c = 0; c < counter; c++){
-        // printf("args[%d]: %s\n", c, args[c]);
+      //   printf("args[%d]: %s\n", c, args[c]);
       // }
 
       if (execvp(args[0], args) == -1) {
@@ -125,8 +117,8 @@ void child(char* input){
 
 
 void parent(){
-      // int rc_wait = wait(NULL);
-      // printf("(pid:%d)>", (int) getpid());
+                                  
+                                             
 }
 
 char* read_line(){
@@ -135,7 +127,6 @@ char* read_line(){
    * 2: 入力文字数分だけ戻り値のメモリ確保
    * */
 
-  // char *buf = malloc(sizeof(char) * MAX);
   char buf[MAX];
   char* command;
   memset(buf, '\0', sizeof(buf));
@@ -144,8 +135,6 @@ char* read_line(){
   read(0, buf, sizeof(buf));
 
   // 2: 入力文字数分だけ戻り値のメモリ確保
-  // printf("%s\n", buf);
-  // printf("count: %d\n", strlen(buf));
   command = (char*)malloc(strlen(buf) * sizeof(char));
   
   strcpy(command, buf);
@@ -170,4 +159,14 @@ void text_convert(char *input, int count){
     // printf("input:%c\n", input[i]);
   }
 
+}
+
+
+void check_keyword(char args){
+  // search < > | & 
+  
+  // when |
+
+  // when &
+  
 }
