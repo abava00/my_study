@@ -9,8 +9,7 @@
 void child(char* input);
 void parent();
 char* read_line();
-void text_convert(char* input);
-void text_count(char* input);
+void text_convert(char* input, int count);
 
 
 int main(int argc, char *argv[]){
@@ -27,7 +26,6 @@ int main(int argc, char *argv[]){
   line = strdup(read_line());
 
   // printf("\nread line: %s\n", line);
-  // fflush(stdout);
 
     int rc = fork();
     if(rc < 0){
@@ -37,14 +35,12 @@ int main(int argc, char *argv[]){
     else if(rc == 0){
       // child
       // printf("hello, I am child (pid:%d)\n", (int) getpid());
-      fflush(stdout);
       child(line);
     }
     else{
       // parent
       int rc_wait = wait(NULL);
       // printf("hello, I am parent of %d (rc_wait:%d) (pid:%d)\n", rc, rc_wait, (int) getpid());
-      fflush(stdout);
       // printf("(pid:%d)>", (int) getpid());
       parent();
       // line = strdup(read_line());
@@ -60,13 +56,27 @@ void child(char* input){
 
       char line[MAX];
       char *cmdline;
-      char *args[MAX];
       int i = 0;
 
       strcpy(line, input);
-      printf("cmdline: %s", line);
-      fflush(stdout);
-      
+      printf("cmdline: %s\n", line);
+
+      int counter = 0; 
+
+
+      char *temp;
+      temp = strtok(line, " ");
+      while(temp != NULL){
+        temp = strtok(NULL, " ");
+        if(temp == NULL){
+          break;
+        }else{
+          counter++;
+        }
+      }
+      printf("%d", counter);
+     
+      char *args[counter + 1];  for(int j = 0; j < counter; j++){ args[j] = NULL; }
       
 
       cmdline = strtok(line, " ");
@@ -74,35 +84,33 @@ void child(char* input){
       printf("text %d: %s\n",i, args[i]);
       i++;
 
-      printf("test\n");
-      fflush(stdout);
-
-
       while(cmdline != NULL){
         cmdline = strtok(NULL, " ");
-        args[i] = strdup(cmdline);
-        printf("text %d: %s\n",i, args[i]);
-        fflush(stdout);
+        if(cmdline == NULL){
+          break;
+        }else{
+          args[i] = strdup(cmdline);
+          // printf("text %d: %s\n",i, cmdline);
+          printf("text %d: %s\n",i, args[i]);
+        }
         i++;
       }
       
-      // ?????????????????????????????????????
-      printf("test\n");
-      fflush(stdout);
-
-      char *myargs[2];
-      myargs[0] = strdup("ls");
-      myargs[1] = NULL;
-      execvp(myargs[0], myargs);
-      fflush(stdout);
+      // char *myargs[2];
+      // myargs[0] = strdup("ls");
+      // myargs[1] = NULL;
+      // execvp(myargs[0], myargs);
       
-      // execvp(args[0], args);
+      
+      args[counter + 1] = NULL;
+      for(int c = 0; c < counter; c++){
+        printf("args[%d]: %s\n", c, args[c]);
+      }
+
       if (execvp(args[0], args) == -1) {
         printf("fault\n");
-        fflush(stdout);
       }else{
         printf("success\n");
-        fflush(stdout);
       }
       
 
@@ -136,15 +144,28 @@ char* read_line(){
   // 2: 入力文字数分だけ戻り値のメモリ確保
   // printf("%s\n", buf);
   // printf("count: %d\n", strlen(buf));
-  // fflush(stdout);
   command = (char*)malloc(strlen(buf) * sizeof(char));
+  
   strcpy(command, buf);
 
-  text_convert(command);
+  text_convert(command, strlen(buf));
 
   return command;
 }
 
-void text_convert(char *input){
+void text_convert(char *input, int count){
+  
+  int isnewline = 0;
+
+  for(int i = 0; i < count; i++){
+    if(input[i] == '\n'){
+      isnewline = 1;
+      input[i] = '\0';
+    }
+    if(isnewline){
+      input[i] = '\0';
+    }
+    // printf("input:%c\n", input[i]);
+  }
 
 }

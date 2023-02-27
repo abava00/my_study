@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 
 
-#define MAX 512
+#define MAX 20
 
 // ToDo
 // write %
