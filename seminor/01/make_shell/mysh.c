@@ -52,20 +52,22 @@ int main(int argc, char *argv[]){
 
 
 void child(char* input){
-      printf("start child\n");
 
+      char tmp[MAX];
       char line[MAX];
       char *cmdline;
       int i = 0;
 
       strcpy(line, input);
-      printf("cmdline: %s\n", line);
+      // printf("cmdline: %s\n", line);
 
       int counter = 0; 
 
-
+      // argument count
       char *temp;
-      temp = strtok(line, " ");
+      strcpy(tmp, input);
+      temp = strtok(tmp, " ");
+      counter++;
       while(temp != NULL){
         temp = strtok(NULL, " ");
         if(temp == NULL){
@@ -74,14 +76,19 @@ void child(char* input){
           counter++;
         }
       }
-      printf("%d", counter);
+      counter++;
+      // printf("単語数 :%d\n", counter);
      
-      char *args[counter + 1];  for(int j = 0; j < counter; j++){ args[j] = NULL; }
+      char *args[counter];  for(int j = 0; j < counter; j++){ args[j] = NULL; }
       
-
+      // DEBUG
+      // for(int c = 0; c < counter; c++){
+        // printf("args[%d]: %s\n", c, args[c]);
+      // }
+      
       cmdline = strtok(line, " ");
       args[i] = strdup(cmdline);
-      printf("text %d: %s\n",i, args[i]);
+      // printf("text %d: %s\n",i, args[i]);
       i++;
 
       while(cmdline != NULL){
@@ -91,7 +98,7 @@ void child(char* input){
         }else{
           args[i] = strdup(cmdline);
           // printf("text %d: %s\n",i, cmdline);
-          printf("text %d: %s\n",i, args[i]);
+          // printf("text %d: %s\n",i, args[i]);
         }
         i++;
       }
@@ -102,10 +109,10 @@ void child(char* input){
       // execvp(myargs[0], myargs);
       
       
-      args[counter + 1] = NULL;
-      for(int c = 0; c < counter; c++){
-        printf("args[%d]: %s\n", c, args[c]);
-      }
+      // DEBUG
+      // for(int c = 0; c < counter; c++){
+        // printf("args[%d]: %s\n", c, args[c]);
+      // }
 
       if (execvp(args[0], args) == -1) {
         printf("fault\n");
@@ -114,17 +121,12 @@ void child(char* input){
       }
       
 
-      // execvp(arg[0], arg); 
-      printf("end child\n");
-
 }
 
 
 void parent(){
-      printf("start parent\n");
       // int rc_wait = wait(NULL);
       // printf("(pid:%d)>", (int) getpid());
-      printf("end parent\n");
 }
 
 char* read_line(){
