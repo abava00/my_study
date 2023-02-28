@@ -6,7 +6,7 @@
 
 #define MAX 512
 
-void child(char* input);
+void child(char *input);
 void parent();
 char *read_line();
 void text_convert(char *input, int count);
@@ -15,15 +15,14 @@ void check_keyword(char args);
 
 int main(int argc, char *argv[]){
 
-  char* line;
+  char *line;
 
   while(1){
-  printf("(pid:%d)>", (int) getpid());
-  fflush(stdout);
+    printf("(pid:%d)>", (int) getpid());
+    fflush(stdout);
 
-
-  /* shell */
-  line = strdup(read_line());
+    /* shell */
+    line = strdup(read_line());
 
     int rc = fork();
     if(rc < 0){
@@ -33,11 +32,13 @@ int main(int argc, char *argv[]){
     else if(rc == 0){
       // child
       child(line);
+      free(line);
     }
     else{
       // parent
       int rc_wait = wait(NULL);
       parent();
+      free(line);
     }
   }
 
@@ -45,9 +46,8 @@ int main(int argc, char *argv[]){
 }
 
 
-void child(char* input){
+void child(char *input){
 
-      char tmp[MAX];
       char line[MAX];
       char *cmdline;
       int i = 0;
@@ -57,25 +57,8 @@ void child(char* input){
       
       check_keyword(line);
 
-      int counter = 0; 
 
-      // argument count
-      char *temp;
-      strcpy(tmp, input);
-      temp = strtok(tmp, " ");
-      counter++;
-      while(temp != NULL){
-        temp = strtok(NULL, " ");
-        if(temp == NULL){
-          break;
-        }else{
-          counter++;
-        }
-      }
-      counter++;
-      // printf("単語数 :%d\n", counter);
-     
-      char *args[counter];  for(int j = 0; j < counter; j++){ args[j] = NULL; }
+      char *args[MAX];  
 
       
       // DEBUG
@@ -92,7 +75,8 @@ void child(char* input){
         cmdline = strtok(NULL, " ");
         if(cmdline == NULL){
           break;
-        }else{
+        }
+        else{
           args[i] = strdup(cmdline);
           // printf("text %d: %s\n",i, cmdline);
           // printf("text %d: %s\n",i, args[i]);
@@ -100,18 +84,19 @@ void child(char* input){
         i++;
       }
       
-      
-      // DEBUG
-      // for(int c = 0; c < counter; c++){
-      //   printf("args[%d]: %s\n", c, args[c]);
-      // }
 
-      if (execvp(args[0], args) == -1) {
+      args[i] = NULL;
+
+      if (execvp(args[0], args) == -1){
         printf("fault\n");
-      }else{
+      }
+      else{
         printf("success\n");
       }
       
+      for(int j = 0; j < MAX; j++){
+        free(args[j]);
+      }
 
 }
 
@@ -121,7 +106,7 @@ void parent(){
                                              
 }
 
-char* read_line(){
+char *read_line(){
   /*
    * 1: 入力の読み取り
    * 2: 入力文字数分だけ戻り値のメモリ確保
