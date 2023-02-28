@@ -8,7 +8,7 @@ int main(){
 
   int p[2];
   char *argv[2];
-  argv[0] = "wc";
+  argv[0] = "cat";
   argv[1] = 0;
   pipe(p);
   if(fork() == 0) {
@@ -16,13 +16,13 @@ int main(){
     dup(p[0]);
     close(p[0]);
     close(p[1]);
-    execvp("/bin/wc", argv);
-  } 
-  else {
+    execv("/bin/cat", argv);
+  } else {
     close(p[0]);
-    write(p[1], "hello world\n", 12);
+    write(p[1], "helo hello world\n", 17);
     close(p[1]);
   }
+
 
   return 0;
 }
